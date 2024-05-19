@@ -1,25 +1,30 @@
 #!/usr/bin/python3
-"""Script that starts a Flask web application"""
-
-from flask import Flask, render_template
+from flask import Flask
+from flask import render_template
 from models import storage
-from models.state import State
+"""
+Very Simple Flask hello world
+"""
+
 
 app = Flask(__name__)
 
 
+@app.route('/states_list')
+def state_list():
+    """
+    Inserts all States from the database to the DOM
+    """
+    storall = storage.all("State").values()
+    return (render_template('7-states_list.html', states=storall))
+
+
 @app.teardown_appcontext
-def close(self):
-    """ clse the session """
+def teardown(exception):
+    """
+    Tears down the db connection
+    """
     storage.close()
 
-
-@app.route('/states_list', strict_slashes=False)
-def states_list():
-    """Display States"""
-    states = storage.all(State)
-    return render_template('7-states_list.html', states=states)
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
